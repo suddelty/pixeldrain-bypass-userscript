@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pixeldrain Download Bypass
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Bypass Pixeldrain Download Limit
 // @author       MegaLime0, honey, Nurarihyon, suddelty
 // @match        https://pixeldrain.com/*
@@ -395,6 +395,7 @@
         popupClose.style.cursor = 'pointer';
         popupClose.onclick = function() {
             popupBox.style.display = 'none';
+            document.getElementById('popupBackdrop').style.display = 'none';
         };
 
         popupBox.innerHTML = '';
@@ -441,6 +442,7 @@
             noLinksMessage.style.padding = "20px";
             popupBox.appendChild(noLinksMessage);
             popupBox.style.display = 'block';
+            document.getElementById('popupBackdrop').style.display = 'block';
             return;
         }
 
@@ -567,6 +569,7 @@
         }
 
         popupBox.style.display = 'block';
+        document.getElementById('popupBackdrop').style.display = 'block';
     }
 
     function updateButtonsForCurrentPage() {
@@ -614,7 +617,25 @@
         popupBox.style.overflowY = "auto";
         popupBox.style.overflowX = "hidden";
 
+        const backdrop = document.createElement("div");
+        backdrop.id = "popupBackdrop";
+        backdrop.style.position = "fixed";
+        backdrop.style.top = "0";
+        backdrop.style.left = "0";
+        backdrop.style.width = "100%";
+        backdrop.style.height = "100%";
+        backdrop.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        backdrop.style.zIndex = 19;
+        backdrop.style.display = "none";
+        backdrop.style.cursor = "default";
+
+        document.body.appendChild(backdrop);
         document.body.appendChild(popupBox);
+
+        backdrop.addEventListener('click', function() {
+            popupBox.style.display = 'none';
+            backdrop.style.display = 'none';
+        });
 
         document.addEventListener('click', function(event) {
             if (popupBox.style.display === 'block') {
@@ -622,6 +643,7 @@
                     const linksButton = document.getElementById('bypass-links-btn');
                     if (!linksButton || !linksButton.contains(event.target)) {
                         popupBox.style.display = 'none';
+                        backdrop.style.display = 'none';
                     }
                 }
             }
